@@ -14,32 +14,36 @@ async function initiateWebRTC(){
     myVideoElement.srcObject = localStream; // set autoplay in the html
     // implementing webRTC
     pc = new RTCPeerConnection();
+    // add an event listener, to indicate when we should start the signaling process
+    pc.addEventListener("negotiationneeded", handleNegotiationNeededEvent);
     // add the type of media / data we wish to send and receive
     const tracks = localStream.getTracks();
     tracks.forEach(track => {
       pc.addTrack(track);
       console.log("track was added to pc object");
     });
-
-    const offer = await pc.createOffer();
-    console.log("offer created", offer);
-
     // getting stats related to our media track added to out pc
     let stats = await pc.getStats();
     stats.forEach(report => {
       console.log(report);
     });
-    // add our offer to our pc object
-    pc.setLocalDescription(offer);
     // listen for ice candidate gathered
-    pc.onicecandidate = (eventObject) => {
+    pc.addEventListener("icecandidate", (eventObject) => {
       console.log("ICE RECEIVED:", eventObject.candidate);
-    };
+    });
 
   } catch (error) {
     console.log(error);
   };
-}
+};
+
+// define our negotiation function
+async function handleNegotiationNeededEvent(){
+  const offer = await pc.createOffer();
+  console.log("offer created", offer); 
+  // add our offer to our pc object
+  await pc.setLocalDescription(offer);
+};
 
 function getVideoIDs(){
   navigator.mediaDevices.enumerateDevices()
