@@ -19,11 +19,11 @@ async function initiateWebRTC() {
         {
           urls: ["stun:stun.l.google.com:19302", "stun:23.21.150.121:3478"],
         },
-        {
-          urls: "turn:openrelay.metered.ca:80",
-          username: "openrelayproject",
-          credentials: "openrelayproject",
-        },
+        // {
+        //   urls: "turn:openrelay.metered.ca:80",
+        //   username: "openrelayproject",
+        //   credentials: "openrelayproject",
+        // },
       ],
     };
     pc = new RTCPeerConnection(webRTCConfiguration);
