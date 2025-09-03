@@ -11,7 +11,9 @@ const inputRoomNameElement = document.getElementById("input_room_channel_name");
 const joinRoomButton = document.getElementById("join_button");
 const createRoomButton = document.getElementById("create_room_button");
 const roomNameHeadingTag = document.getElementById("room_name_heading_tag");
-const landingPage = document.getElementById("landing_page_container");
+const landing_page_container = document.getElementById(
+  "landing_page_container"
+);
 const roomInterface = document.getElementById("room_interface");
 const messagesContainer = document.getElementById("messages");
 const messageInputField = document.getElementById("message_input_field");
@@ -56,6 +58,11 @@ const offereeUpdateLocalDescriptionButton = document.getElementById(
 const offereeSendAnswerButton = document.getElementById("offeree_send_answer");
 const offereeIceButton = document.getElementById("ice_offeree");
 
+export const DOM = {
+  createRoomButton,
+  inputRoomNameElement,
+};
+
 // initialize Ui events as soon as user enters page
 export function initializeUi(userId) {
   user_session_id_element.innerHTML = `Your session id is: ${userId}`;
@@ -82,10 +89,29 @@ function openModal() {
   infoModalContainer.classList.remove("hide");
 }
 
-// logic for opening a modal
+// logic for closing a modal
 function closeModal() {
   infoModalContainer.classList.add("hide");
   infoModalContainer.classList.remove("show");
+}
+
+// ########### ROOM LOGIC
+
+// listen for the enter / return key and trigger the create room button
+inputRoomNameElement.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    createRoomButton.click();
+  }
+});
+
+// function for the creator to enter a room
+export function creatorToProceedToRoom() {
+  landing_page_container.style.display = "none"; // hide the landing page section
+  exitButton.classList.add("hide");
+  roomInterface.classList.remove("hide"); //showing the room interface
+  roomNameHeadingTag.textContent = `You are in room ${
+    state.getState().roomName
+  }`;
 }
 
 // custom logger

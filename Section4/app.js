@@ -1,10 +1,16 @@
 import http from "http";
 import express from "express";
 import { WebSocketServer } from "ws";
+import * as constants from "./constants.js";
 
 // define global variables
 const connections = [
-  // will contain objects containing{ws_connection, userId}
+  // will contain objects containing {ws_connection, userId}
+];
+
+// define state or our rooms
+const rooms = [
+  // will contain objects containing {roomName, peer1, peer2}
 ];
 
 // define a port for live and testing environment;
@@ -20,6 +26,49 @@ const server = http.createServer(app);
 app.get("/", (req, res) => {
   res.sendFile(process.cwd() + "/public/index.html");
 });
+
+// room creation via a POST request
+app.post("/create-room", (req, res) => {
+  // parse the body of the incoming request
+  let body = "";
+  req.on("data", (chunk) => {
+    body += chunk.toString();
+  });
+
+  req.on("end", () => {
+    // extract variables from our body
+    const { roomName, userId } = JSON.parse(body);
+    // check if room already exists
+    const existingRoom = rooms.find((room) => {
+      return room.roomName === roomName;
+    });
+    if (existingRoom) {
+      // a room of this name exists, and we need to send back a failure message back to the client
+      const failureMessage = {
+        data: {
+          type: constants.type.ROOM_CHECK.RESPONSE_FAILURE,
+          message:
+            "That room has already been created. Try another name, or JOIN",
+        },
+      };
+      res.status(400).json(failureMessage);
+    } else {
+      // the room does not already exist, so we have to add it to the rooms array
+      rooms.push({
+        roomName,
+        peer1: userId,
+        peer2: null,
+      });
+      // send a success message back to the client
+      const successMessage = {
+        data: {
+          type: constants.type.ROOM_CHECK.RESPONSE_SUCCESS,
+        },
+      };
+      res.status(200).json(successMessage);
+    }
+  });
+}); // end CREATE Room
 
 // websocket server setup
 //  mount our ws server onto our http server

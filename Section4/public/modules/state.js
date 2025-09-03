@@ -3,6 +3,7 @@
 let state = {
   userId: null,
   userWebSocketConnection: null,
+  roomName: null,
 };
 
 // generic setter function for our state object
@@ -18,6 +19,11 @@ export const setUserId = (userId) => {
 // set the ws object state for the user
 export const setWsConnection = (wsConnection) => {
   setState({ userWebSocketConnection: wsConnection });
+};
+
+// set the roomName
+export const setRoomName = (roomName) => {
+  setState({ roomName });
 };
 
 // getter for our state object
